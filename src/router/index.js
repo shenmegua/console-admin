@@ -1,10 +1,17 @@
 import Home from '@/components/Home';
+import Login from '@/components/Login'
 import Index from '@/components/views/Index'
 import User from '@/components/views/console/User'
 import Role from '@/components/views/console/Role'
 import Permission from '@/components/views/console/Permission'
 
 let routes = [
+  {
+    path: '/login',
+    component: Login,
+    name: '',
+    hidden: true
+  },
   {
     path: '/',
     component: Home,

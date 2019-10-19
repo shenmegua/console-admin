@@ -1,7 +1,8 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import {Users} from './data/users';
+import {LoginUser, Users, Roles} from './data/users';
 let _Users = Users;
+let _Roles = Roles;
 
 export default {
   init(){
@@ -9,6 +10,36 @@ export default {
 
     mock.onGet('/success').reply(200, {
       msg: 'success'
+    });
+
+    mock.onGet('/error').reply(200, {
+      msg: 'error'
+    });
+
+    // 登录
+    mock.onPost('/login').reply(req => {
+      let {userId, password} = JSON.parse(req.data);
+      return new Promise((resolve, reject) => {
+        let user = null;
+        setTimeout(() => {
+          let hasUser = LoginUser.some(u => {
+            if(u.userId === userId && u.password === password){
+              user = JSON.parse(JSON.stringify(u));
+              user.password = '';
+              return true;
+            }
+          });
+          if(hasUser){
+            resolve([200, {
+              code: 200,
+              msg: '登录成功！',
+              user: user
+            }]);
+          }else{
+            resolve([200, {code: 500, msg:'账号或密码错误！'}]);
+          }
+        }, 1000);
+      });
     });
 
     mock.onGet('/user/list').reply( req => {
@@ -111,6 +142,27 @@ export default {
           }]);
         }, 500);
       }).catch(() => {});
+    });
+
+    // 查询角色列表
+    mock.onGet('/role/listPage').reply(req => {
+      let {page, pageSize, roleId, roleName} = req.params;
+      let roleList = _Roles.filter(role => {
+        if(role && (role.roleId.indexOf(roleId) == -1 || role.roleName.indexOf(roleName))) return false;
+        return true;
+      });
+      let total = roleList.length;
+      roleList = roleList.filter((u, index) => index < pageSize * page && index >= pageSize * (page -1));
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve([200, {
+            total: total,
+            page: page,
+            pageSize: pageSize,
+            roleList: roleList
+          }]);
+        }, 1000);
+      });
     });
 
   }

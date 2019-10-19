@@ -2,6 +2,8 @@ import axios from 'axios';
 
 let base = '';
 
+export const userLogin = params => {return axios.post(`${base}/login`, params).then(res => res.data);}
+
 export const getUserList = params => {return axios.get(`${base}/user/list`, {params: params});};
 
 export const getUserListPage = params => {
@@ -25,4 +27,9 @@ export const editUser = params => {
 // 新增用户
 export const addUser = params => {
   return axios.get(`${base}/user/add`, {params: params});
+}
+
+// 分页查询角色列表
+export const getRoleListPage = params => {
+  return axios.get(`${base}/role/listPage`, {params: params});
 }
